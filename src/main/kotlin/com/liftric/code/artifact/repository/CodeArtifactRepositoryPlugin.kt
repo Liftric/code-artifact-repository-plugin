@@ -1,12 +1,12 @@
 package com.liftric.code.artifact.repository
 
 import org.gradle.api.Plugin
-import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.api.initialization.Settings
 import org.gradle.configurationcache.extensions.capitalized
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenResponse
@@ -16,9 +16,9 @@ import java.net.URI
 
 private const val extensionName = "CodeArtifactRepository"
 
-abstract class CodeArtifactRepositoryPlugin : Plugin<Project> {
-    override fun apply(project: Project) {
-        val extension = project.extensions.create<CodeArtifactRepositoryExtension>(extensionName)
+abstract class CodeArtifactRepositoryPlugin : Plugin<Settings> {
+    override fun apply(settings: Settings) {
+        val extension = settings.extensions.create<CodeArtifactRepositoryExtension>(extensionName)
 
         val codeArtifact = CodeArtifact(extension)
 
@@ -77,6 +77,6 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
     }
 }
 
-fun Project.codeArtifactRepository(extension: CodeArtifactRepositoryExtension.() -> Unit) {
-    project.configure(extension)
+inline fun Settings.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
+    extensions.getByType<CodeArtifactRepositoryExtension>().configure()
 }
