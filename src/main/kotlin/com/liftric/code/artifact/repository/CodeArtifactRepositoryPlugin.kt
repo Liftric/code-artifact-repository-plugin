@@ -1,6 +1,8 @@
 package com.liftric.code.artifact.repository
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
+import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.initialization.Settings
@@ -12,22 +14,25 @@ import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenResponse
 import software.amazon.awssdk.services.codeartifact.model.GetRepositoryEndpointResponse
 import software.amazon.awssdk.services.sts.StsClient
-import java.net.URI
 
 private const val extensionName = "CodeArtifactRepository"
 
-abstract class CodeArtifactRepositoryPlugin : Plugin<Settings> {
-    override fun apply(settings: Settings) {
-        val extension = settings.extensions.create<CodeArtifactRepositoryExtension>(extensionName)
+private lateinit var codeArtifact: CodeArtifact
+private lateinit var extension: CodeArtifactRepositoryExtension
 
-        val codeArtifact = CodeArtifact(extension)
-
-        fun RepositoryHandler.codeArtifact(domain: String? = null, repository: String): MavenArtifactRepository = maven {
-            name = listOf("CodeArtifact", domain ?: extension.domain.get(), repository).joinToString("") { it.capitalized() }
-            url = URI(codeArtifact.repositoryEndpointResponse(repository).repositoryEndpoint())
-            credentials {
-                username = "aws"
-                password = codeArtifact.authorizationTokenRepsponse().authorizationToken()
+abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
+    override fun apply(scope: Any)  {
+        when (scope) {
+            is Settings -> {
+                extension = scope.extensions.create(extensionName)
+                codeArtifact = CodeArtifact(extension)
+            }
+            is Project -> {
+                extension = scope.extensions.create(extensionName)
+                codeArtifact = CodeArtifact(extension)
+            }
+            else -> {
+                throw GradleException("Should only get applied on Settings or Project")
             }
         }
     }
@@ -40,7 +45,7 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
     private val stsClient by lazy {
         StsClient.builder().apply {
             region(extension.region.get())
-            if (extension.shouldResolveCredentialsByEnvironment.get().not()) {
+            if (!extension.shouldResolveCredentialsByEnvironment.getOrElse(true)) {
                 credentialsProvider {
                     ProfileCredentialsProvider.create(extension.profile.get()).resolveCredentials()
                 }
@@ -51,7 +56,7 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
     private val codeArtifactClient by lazy {
         CodeartifactClient.builder().apply {
             region(extension.region.get())
-            if (extension.shouldResolveCredentialsByEnvironment.get().not()) {
+            if (!extension.shouldResolveCredentialsByEnvironment.getOrElse(true)) {
                 credentialsProvider {
                     ProfileCredentialsProvider.create(extension.profile.get()).resolveCredentials()
                 }
@@ -63,7 +68,7 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
         return codeArtifactClient.getAuthorizationToken {
             it.domain(extension.domain.get())
             it.domainOwner(account)
-            it.durationSeconds(extension.tokenExpiresIn.get())
+            it.durationSeconds(extension.tokenExpiresIn.getOrElse(1_800))
         }
     }
 
@@ -79,4 +84,19 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
 
 inline fun Settings.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
     extensions.getByType<CodeArtifactRepositoryExtension>().configure()
+}
+
+inline fun Project.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
+    extensions.getByType<CodeArtifactRepositoryExtension>().configure()
+}
+
+fun RepositoryHandler.codeArtifact(repository: String): MavenArtifactRepository = codeArtifact(extension.domain.get(), repository)
+
+fun RepositoryHandler.codeArtifact(domain: String, repository: String): MavenArtifactRepository = maven {
+    setName(listOf("CodeArtifact", domain, repository).joinToString("") { it.capitalized() })
+    setUrl(codeArtifact.repositoryEndpointResponse(repository).repositoryEndpoint())
+    credentials {
+        username = "aws"
+        password = codeArtifact.authorizationTokenRepsponse().authorizationToken()
+    }
 }

@@ -2,7 +2,7 @@
 
 Convenience plugin to apply AWS CodeArtifact repositories to your Gradle project.
 
-Configure the plugin extension and then apply your repositories.
+Configure the plugin extension either in the settings.gradle.kts or build.gradle.kts and then apply your repositories.
 
 ```kotlin
 plugins {
@@ -20,8 +20,10 @@ codeArtifactRepository {
     shouldResolveCredentialsByEnvironment.set(System.getenv("CI") != null)
 }
 
-repositories {
-    codeArtifact("my_repository")
-    codeArtifact("my_other_domain", "my_other_repository")
+dependencyResolutionManagement {
+    repositories {
+        codeArtifact("my_repository")
+        codeArtifact("my_other_domain", "my_other_repository")
+    }
 }
 ```
