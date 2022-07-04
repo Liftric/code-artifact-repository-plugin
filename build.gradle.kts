@@ -76,7 +76,7 @@ gradlePlugin {
         create("CodeArtifactRepositoryPlugin") {
             id = "com.liftric.code-artifact-repository-plugin"
             displayName = "code-artifact-repository-plugin"
-            description = "Apply AWS Code Artifact repositories"
+            description = "Apply AWS CodeArtifact repositories"
             implementationClass = "com.liftric.code.artifact.repository.CodeArtifactRepositoryPlugin"
         }
     }
@@ -85,6 +85,6 @@ gradlePlugin {
 pluginBundle {
     website = "https://github.com/Liftric/code-artifact-repository-plugin"
     vcsUrl = "https://github.com/Liftric/code-artifact-repository-plugin"
-    description = "Gradle plugin to apply AWS Code Artifact repository"
-    tags = listOf("gradle", "plugin", "aws", "code-artifact", "maven", "repository")
+    description = "Gradle plugin to apply AWS CodeArtifact repositories"
+    tags = listOf("gradle", "plugin", "aws", "codeartifact", "maven", "repository")
 }
