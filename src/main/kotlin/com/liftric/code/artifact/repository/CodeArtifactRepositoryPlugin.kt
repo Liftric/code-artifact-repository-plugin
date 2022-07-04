@@ -21,7 +21,7 @@ private lateinit var codeArtifact: CodeArtifact
 private lateinit var extension: CodeArtifactRepositoryExtension
 
 abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
-    override fun apply(scope: Any)  {
+    override fun apply(scope: Any) {
         when (scope) {
             is Settings -> {
                 extension = scope.extensions.create(extensionName)
