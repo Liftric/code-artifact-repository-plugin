@@ -7,6 +7,6 @@ interface CodeArtifactRepositoryExtension {
     val region: Property<Region>
     val profile: Property<String>
     val domain: Property<String>
-    val timeout: Property<Long>
+    val tokenExpiresIn: Property<Long>
     val shouldResolveCredentialsByEnvironment: Property<Boolean>
 }

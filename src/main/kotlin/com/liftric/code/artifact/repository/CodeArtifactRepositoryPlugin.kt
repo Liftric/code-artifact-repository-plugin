@@ -5,9 +5,9 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenResponse
 import software.amazon.awssdk.services.codeartifact.model.GetRepositoryEndpointResponse
@@ -19,9 +19,6 @@ private const val extensionName = "CodeArtifactRepository"
 abstract class CodeArtifactRepositoryPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create<CodeArtifactRepositoryExtension>(extensionName)
-
-        extension.timeout.getOrElse(1_800) // 30min
-        extension.shouldResolveCredentialsByEnvironment.getOrElse(false)
 
         val codeArtifact = CodeArtifact(extension)
 
@@ -66,7 +63,7 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
         return codeArtifactClient.getAuthorizationToken {
             it.domain(extension.domain.get())
             it.domainOwner(account)
-            it.durationSeconds(extension.timeout.get())
+            it.durationSeconds(extension.tokenExpiresIn.get())
         }
     }
 
@@ -78,4 +75,8 @@ class CodeArtifact(private val extension: CodeArtifactRepositoryExtension) {
             it.format(format)
         }
     }
+}
+
+fun Project.codeArtifactRepository(extension: CodeArtifactRepositoryExtension.() -> Unit) {
+    project.configure(extension)
 }
