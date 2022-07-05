@@ -2,7 +2,6 @@ package com.liftric.code.artifact.repository
 
 import org.gradle.api.plugins.ExtensionContainer
 
-
 abstract class CodeArtifactRepositoryExtension(private val extensionContainer: ExtensionContainer) : CodeArtifact() {
     fun additional(name: String, block: CodeArtifact.() -> Unit) {
         if (name.isEmpty()) error("empty domain not supported!")
