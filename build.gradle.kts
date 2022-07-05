@@ -86,5 +86,5 @@ pluginBundle {
     website = "https://github.com/Liftric/code-artifact-repository-plugin"
     vcsUrl = "https://github.com/Liftric/code-artifact-repository-plugin"
     description = "Gradle plugin to apply AWS CodeArtifact repositories"
-    tags = listOf("gradle", "plugin", "aws", "codeartifact", "maven", "repository")
+    tags = listOf("aws", "codeartifact", "maven", "repository")
 }
