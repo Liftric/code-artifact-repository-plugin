@@ -53,14 +53,14 @@ fun RepositoryHandler.codeArtifact(domain: String, repository: String): MavenArt
  */
 fun RepositoryHandler.codeArtifact(additionalName: String, domain: String, repository: String) = maven {
     val extensionName = "$additionalName${CodeArtifactRepositoryPlugin.extensionName}"
-    CodeArtifactRepositoryExtension.additional[extensionName]?.let {
+    CodeArtifactRepositoryExtension.additional[additionalName]?.let {
         name = listOf(extensionName, domain, repository).joinToString("") { it.capitalized() }
         url = URI.create(it.repositoryEndpointResponse(domain, repository).repositoryEndpoint())
         credentials {
             username = "aws"
             password = it.authorizationTokenResponse(domain).authorizationToken()
         }
-    } ?: throw GradleException("didn't find CodeArtifactRepositoryExtension with the name: $")
+    } ?: throw GradleException("didn't find CodeArtifactRepositoryExtension with the name: $additionalName")
 }
 
 /**
