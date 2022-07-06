@@ -6,7 +6,7 @@ abstract class CodeArtifactRepositoryExtension(private val extensionContainer: E
     fun additional(name: String, block: CodeArtifact.() -> Unit) {
         if (name.isEmpty()) error("Empty domain is not supported!")
         store[name] = extensionContainer.create(
-            "${name}${CodeArtifactRepositoryPlugin.extensionName}",
+            name,
             CodeArtifactRepositoryExtension::class.java,
             extensionContainer
         ).apply {
