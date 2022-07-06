@@ -16,14 +16,14 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
     override fun apply(scope: Any) {
         when (scope) {
             is Settings -> {
-                scope.extensions.create("", CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
             }
 
             is Project -> {
-                scope.extensions.create("", CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
@@ -34,14 +34,18 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
             }
         }
     }
+
+    companion object {
+        const val extensionName = "CodeArtifactRepository"
+    }
 }
 
 inline fun Settings.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
-    extensions.getByName<CodeArtifactRepositoryExtension>("").configure()
+    extensions.getByName<CodeArtifactRepositoryExtension>(CodeArtifactRepositoryPlugin.extensionName).configure()
 }
 
 inline fun Project.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
-    extensions.getByName<CodeArtifactRepositoryExtension>("").configure()
+    extensions.getByName<CodeArtifactRepositoryExtension>(CodeArtifactRepositoryPlugin.extensionName).configure()
 }
 
 /**
