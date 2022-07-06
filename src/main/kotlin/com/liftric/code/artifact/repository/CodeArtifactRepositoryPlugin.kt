@@ -17,10 +17,16 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
         when (scope) {
             is Settings -> {
                 scope.extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                    .also {
+                        CodeArtifactRepositoryExtension.store[""] = it
+                    }
             }
 
             is Project -> {
                 scope.extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                    .also {
+                        CodeArtifactRepositoryExtension.store[""] = it
+                    }
             }
 
             else -> {
@@ -53,14 +59,14 @@ fun RepositoryHandler.codeArtifact(domain: String, repository: String): MavenArt
  */
 fun RepositoryHandler.codeArtifact(additionalName: String, domain: String, repository: String) = maven {
     val extensionName = "$additionalName${CodeArtifactRepositoryPlugin.extensionName}"
-    CodeArtifactRepositoryExtension.additional[additionalName]?.let {
+    CodeArtifactRepositoryExtension.store[additionalName]?.let {
         name = listOf(extensionName, domain, repository).joinToString("") { it.capitalized() }
         url = URI.create(it.repositoryEndpointResponse(domain, repository).repositoryEndpoint())
         credentials {
             username = "aws"
             password = it.authorizationTokenResponse(domain).authorizationToken()
         }
-    } ?: throw GradleException("didn't find CodeArtifactRepositoryExtension with the name: $additionalName")
+    } ?: throw GradleException("Couldn't find CodeArtifactRepositoryExtension named '$additionalName'")
 }
 
 /**
@@ -82,7 +88,7 @@ fun codeArtifactUri(domain: String, repository: String, format: String): URI =
  */
 fun codeArtifactToken(additionalName: String, domain: String): String {
     val extensionName = "$additionalName${CodeArtifactRepositoryPlugin.extensionName}"
-    val settings = CodeArtifactRepositoryExtension.additional[extensionName]
+    val settings = CodeArtifactRepositoryExtension.store[extensionName]
         ?: throw GradleException("didn't find CodeArtifactRepositoryExtension with the name: $")
     return settings.authorizationTokenResponse(domain).authorizationToken()
 }
@@ -95,7 +101,7 @@ fun codeArtifactToken(additionalName: String, domain: String): String {
  */
 fun codeArtifactUri(additionalName: String, domain: String, repository: String, format: String): URI {
     val extensionName = "$additionalName${CodeArtifactRepositoryPlugin.extensionName}"
-    val settings = CodeArtifactRepositoryExtension.additional[extensionName]
+    val settings = CodeArtifactRepositoryExtension.store[extensionName]
         ?: throw GradleException("didn't find CodeArtifactRepositoryExtension with the name: $")
     return settings.repositoryEndpointResponse(domain, repository, format).repositoryEndpoint().let { URI.create(it) }
 }
