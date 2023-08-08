@@ -56,3 +56,49 @@ You can also just get the token and endpoint, if you wan't to configure somethin
 val token = codeArtifactToken(domain = "my_domain")
 val uri = codeArtifactUri(domain = "my_domain", repository = "my_repository")
 ```
+
+## Use from gradle init script
+The plugin can also be used during gradle init time.
+
+The example (the `init.gradle.kts` file) configures a custom plugin repository, in our case used for a custom and private fargate plugin which is hosted
+in a private code artifact repository.
+
+**Note:** We have to use a gradle init script, no other way to apply the CodeArtifactRepositoryPlugin before the pluginManagement block inside a `settings.gradle.kts` file.
+
+```
+import com.liftric.code.artifact.repository.codeArtifact
+import com.liftric.code.artifact.repository.codeArtifactRepository
+import software.amazon.awssdk.regions.Region.*
+
+initscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("com.liftric.code.artifact.repository:code-artifact-repository-plugin:<latest>")
+    }
+}
+apply<com.liftric.code.artifact.repository.CodeArtifactRepositoryPlugin>()
+codeArtifactRepository {
+    region.set(EU_CENTRAL_1)
+    // use profile credentials provider, otherwise the default credentials chain of aws will be used
+    if (System.getenv("CI") == null) {
+        profile.set("liftric")
+    }
+    // Determines how long the generated authentication token is valid in seconds
+    tokenExpiresIn.set(1_800)
+}
+settingsEvaluated {
+    pluginManagement {
+        repositories {
+            codeArtifact("<private-domain>", "fargate-gradle-plugin")
+            google()
+            mavenCentral()
+            gradlePluginPortal()
+        }
+    }
+}
+
+```
