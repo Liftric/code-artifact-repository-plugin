@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.initialization.Settings
+import org.gradle.api.invocation.Gradle
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.getByName
 import java.net.URI
@@ -21,14 +22,20 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
             }
-
             is Project -> {
                 scope.extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
             }
-
+            is Gradle -> {
+                scope.beforeSettings {
+                    extensions.create(extensionName, CodeArtifactRepositoryExtension::class.java, extensions)
+                        .also {
+                            CodeArtifactRepositoryExtension.store[""] = it
+                        }
+                }
+            }
             else -> {
                 throw GradleException("Should only get applied on Settings or Project")
             }
@@ -46,6 +53,12 @@ inline fun Settings.codeArtifactRepository(configure: CodeArtifactRepositoryExte
 
 inline fun Project.codeArtifactRepository(configure: CodeArtifactRepositoryExtension.() -> Unit) {
     extensions.getByName<CodeArtifactRepositoryExtension>(CodeArtifactRepositoryPlugin.extensionName).configure()
+}
+
+inline fun Gradle.codeArtifactRepository(crossinline configure: CodeArtifactRepositoryExtension.() -> Unit) {
+    settingsEvaluated {
+        extensions.getByName<CodeArtifactRepositoryExtension>(CodeArtifactRepositoryPlugin.extensionName).configure()
+    }
 }
 
 /**
