@@ -40,8 +40,8 @@ codeArtifactRepository {
     }
     additional("customer2") {
         // if a profile is not available you can also provide the credentials directly
-        accessKeyId = System.getenv("CUSTOMER2_AWS_ACCESS_KEY_ID")
-        secretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        accessKeyId.set(System.getenv("CUSTOMER2_AWS_ACCESS_KEY_ID"))
+        secretAccessKey.set(System.getenv("CUSTOMER2_AWS_SECRET_ACCESS_KEY"))
         // reuses properties of the default extension if not explicitly specified
     }
 }
