@@ -13,6 +13,8 @@ abstract class CodeArtifactRepositoryExtension(private val extensionContainer: E
             block.invoke(this)
             region.convention(this@CodeArtifactRepositoryExtension.region)
             profile.convention(this@CodeArtifactRepositoryExtension.profile)
+            accessKeyId.convention(this@CodeArtifactRepositoryExtension.accessKeyId)
+            secretAccessKey.convention(this@CodeArtifactRepositoryExtension.secretAccessKey)
             tokenExpiresIn.convention(this@CodeArtifactRepositoryExtension.tokenExpiresIn)
         }
     }
