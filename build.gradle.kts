@@ -62,6 +62,12 @@ tasks.withType<DependencyUpdatesTask> {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 group = "com.liftric.code.artifact.repository"
 version =
     with(versioning.info) {
