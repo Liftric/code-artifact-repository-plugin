@@ -1,19 +1,17 @@
 [versions]
-aws = "2.17.224"
-detekt = "1.20.0"
-junit = "4.13.2"
-kotlin = "1.7.0"
-ktlint-gradle = "10.3.0"
-plugin-publish = "1.0.0"
-version-catalog-update = "0.5.1"
-version-check = "0.42.0"
-versioning = "3.0.0"
+aws = "2.26.31"
+detekt = "1.23.6"
+kotlin = "2.0.10"
+ktlint-gradle = "12.1.1"
+plugin-publish = "1.2.1"
+version-catalog-update = "0.8.4"
+version-check = "0.51.0"
+versioning = "3.1.0"
 
 [libraries]
 aws-codeartifact = { module = "software.amazon.awssdk:codeartifact", version.ref = "aws" }
 aws-ecs = { module = "software.amazon.awssdk:ecs", version.ref = "aws" }
 aws-sts = { module = "software.amazon.awssdk:sts", version.ref = "aws" }
-junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

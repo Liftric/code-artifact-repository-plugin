@@ -1,6 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 
+@Suppress("DSL_SCOPE_VIOLATION") // IntelliJ incorrectly marks libs as not callable
 plugins {
     `kotlin-dsl`
     `maven-publish`
@@ -18,7 +19,6 @@ dependencies {
     implementation(libs.aws.ecs)
     implementation(libs.aws.codeartifact)
     implementation(libs.aws.sts)
-    testImplementation(libs.junit)
 }
 
 ktlint {
@@ -63,28 +63,25 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 group = "com.liftric.code.artifact.repository"
-version = with(versioning.info) {
-    if (branch == "HEAD" && dirty.not()) {
-        tag
-    } else {
-        full
+version =
+    with(versioning.info) {
+        if (branch == "HEAD" && dirty.not()) {
+            tag
+        } else {
+            full
+        }
     }
-}
 
 gradlePlugin {
+    website.set("https://github.com/Liftric/code-artifact-repository-plugin")
+    vcsUrl.set("https://github.com/Liftric/code-artifact-repository-plugin")
     plugins {
         create("CodeArtifactRepositoryPlugin") {
             id = "com.liftric.code-artifact-repository-plugin"
             displayName = "code-artifact-repository-plugin"
             description = "Apply AWS CodeArtifact repositories"
             implementationClass = "com.liftric.code.artifact.repository.CodeArtifactRepositoryPlugin"
+            tags.set(listOf("aws", "codeartifact", "maven", "repository"))
         }
     }
-}
-
-pluginBundle {
-    website = "https://github.com/Liftric/code-artifact-repository-plugin"
-    vcsUrl = "https://github.com/Liftric/code-artifact-repository-plugin"
-    description = "Gradle plugin to apply AWS CodeArtifact repositories"
-    tags = listOf("aws", "codeartifact", "maven", "repository")
 }
