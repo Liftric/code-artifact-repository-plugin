@@ -31,7 +31,7 @@ abstract class CodeArtifact {
                         AwsBasicCredentials.create(
                             accessKeyId.get(),
                             secretAccessKey.get(),
-                        )
+                        ),
                     ).resolveCredentials()
                 }
             } else {
@@ -55,7 +55,7 @@ abstract class CodeArtifact {
                         AwsBasicCredentials.create(
                             accessKeyId.get(),
                             secretAccessKey.get(),
-                        )
+                        ),
                     ).resolveCredentials()
                 }
             } else {
@@ -83,7 +83,7 @@ abstract class CodeArtifact {
     internal fun repositoryEndpointResponse(
         domain: String,
         repository: String,
-        format: String = "maven"
+        format: String = "maven",
     ): GetRepositoryEndpointResponse {
         return client.getRepositoryEndpoint {
             it.domain(domain)
