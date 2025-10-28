@@ -1,11 +1,11 @@
 [versions]
-aws = "2.26.31"
-detekt = "1.23.6"
-kotlin = "2.0.10"
-ktlint-gradle = "12.1.1"
-plugin-publish = "1.2.1"
-version-catalog-update = "0.8.4"
-version-check = "0.51.0"
+aws = "2.34.0"
+detekt = "1.23.8"
+kotlin = "2.2.21"
+ktlint-gradle = "13.1.0"
+plugin-publish = "2.0.0"
+version-catalog-update = "1.0.1"
+version-check = "0.53.0"
 versioning = "3.1.0"
 
 [libraries]

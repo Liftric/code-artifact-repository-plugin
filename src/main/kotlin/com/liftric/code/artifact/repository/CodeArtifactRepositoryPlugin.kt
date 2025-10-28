@@ -9,7 +9,7 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
-import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.getByName
 import java.net.URI
 
@@ -17,14 +17,16 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
     override fun apply(scope: Any) {
         when (scope) {
             is Settings -> {
-                scope.extensions.create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions
+                    .create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
             }
 
             is Project -> {
-                scope.extensions.create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions
+                    .create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
