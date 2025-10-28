@@ -1,5 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 @Suppress("DSL_SCOPE_VIOLATION") // IntelliJ incorrectly marks libs as not callable
 plugins {
@@ -36,7 +37,7 @@ ktlint {
 
 detekt {
     ignoreFailures = true
-    config = rootProject.files("config/detekt/detekt.yml")
+    config.setFrom(rootProject.files("config/detekt/detekt.yml"))
 }
 
 tasks.withType<Detekt>().configureEach {
@@ -50,8 +51,6 @@ versionCatalogUpdate {
     sortByKey.set(true)
     keep {
         keepUnusedVersions.set(false)
-        keepUnusedLibraries.set(false)
-        keepUnusedPlugins.set(false)
     }
 }
 
@@ -63,8 +62,8 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
