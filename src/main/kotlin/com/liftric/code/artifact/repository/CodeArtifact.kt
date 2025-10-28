@@ -21,75 +21,79 @@ abstract class CodeArtifact {
     abstract val secretAccessKey: Property<String>
 
     private val stsClient by lazy {
-        StsClient.builder().apply {
-            region.orNull?.let {
-                region(it)
-            }
-            if (accessKeyId.orNull != null && secretAccessKey.orNull != null) {
-                credentialsProvider {
-                    StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(
-                            accessKeyId.get(),
-                            secretAccessKey.get(),
-                        ),
-                    ).resolveCredentials()
+        StsClient
+            .builder()
+            .apply {
+                region.orNull?.let {
+                    region(it)
                 }
-            } else {
-                profile.orNull?.let {
+                if (accessKeyId.orNull != null && secretAccessKey.orNull != null) {
                     credentialsProvider {
-                        ProfileCredentialsProvider.create(profile.get()).resolveCredentials()
+                        StaticCredentialsProvider
+                            .create(
+                                AwsBasicCredentials.create(
+                                    accessKeyId.get(),
+                                    secretAccessKey.get(),
+                                ),
+                            ).resolveCredentials()
+                    }
+                } else {
+                    profile.orNull?.let {
+                        credentialsProvider {
+                            ProfileCredentialsProvider.create(profile.get()).resolveCredentials()
+                        }
                     }
                 }
-            }
-        }.build()
+            }.build()
     }
 
     private val client by lazy {
-        CodeartifactClient.builder().apply {
-            region.orNull?.let {
-                region(it)
-            }
-            if (accessKeyId.orNull != null && secretAccessKey.orNull != null) {
-                credentialsProvider {
-                    StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(
-                            accessKeyId.get(),
-                            secretAccessKey.get(),
-                        ),
-                    ).resolveCredentials()
+        CodeartifactClient
+            .builder()
+            .apply {
+                region.orNull?.let {
+                    region(it)
                 }
-            } else {
-                profile.orNull?.let {
+                if (accessKeyId.orNull != null && secretAccessKey.orNull != null) {
                     credentialsProvider {
-                        ProfileCredentialsProvider.create(profile.get()).resolveCredentials()
+                        StaticCredentialsProvider
+                            .create(
+                                AwsBasicCredentials.create(
+                                    accessKeyId.get(),
+                                    secretAccessKey.get(),
+                                ),
+                            ).resolveCredentials()
+                    }
+                } else {
+                    profile.orNull?.let {
+                        credentialsProvider {
+                            ProfileCredentialsProvider.create(profile.get()).resolveCredentials()
+                        }
                     }
                 }
-            }
-        }.build()
+            }.build()
     }
 
     private val accountId by lazy {
         stsClient.getCallerIdentity {}.account()
     }
 
-    internal fun authorizationTokenResponse(domain: String): GetAuthorizationTokenResponse {
-        return client.getAuthorizationToken {
+    internal fun authorizationTokenResponse(domain: String): GetAuthorizationTokenResponse =
+        client.getAuthorizationToken {
             it.domain(domain)
             it.domainOwner(accountId)
             it.durationSeconds(tokenExpiresIn.getOrElse(1_800))
         }
-    }
 
     internal fun repositoryEndpointResponse(
         domain: String,
         repository: String,
         format: String = "maven",
-    ): GetRepositoryEndpointResponse {
-        return client.getRepositoryEndpoint {
+    ): GetRepositoryEndpointResponse =
+        client.getRepositoryEndpoint {
             it.domain(domain)
             it.domainOwner(accountId)
             it.repository(repository)
             it.format(format)
         }
-    }
 }

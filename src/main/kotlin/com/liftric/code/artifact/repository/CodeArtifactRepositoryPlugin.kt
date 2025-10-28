@@ -17,14 +17,16 @@ abstract class CodeArtifactRepositoryPlugin : Plugin<Any> {
     override fun apply(scope: Any) {
         when (scope) {
             is Settings -> {
-                scope.extensions.create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions
+                    .create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
             }
 
             is Project -> {
-                scope.extensions.create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
+                scope.extensions
+                    .create(EXTENSION_NAME, CodeArtifactRepositoryExtension::class.java, scope.extensions)
                     .also {
                         CodeArtifactRepositoryExtension.store[""] = it
                     }
