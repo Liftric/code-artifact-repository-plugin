@@ -1,12 +1,12 @@
 [versions]
-aws = "2.34.0"
+aws = "2.55.1"
 detekt = "1.23.8"
-kotlin = "2.2.21"
-ktlint-gradle = "13.1.0"
-plugin-publish = "2.0.0"
-version-catalog-update = "1.0.1"
-version-check = "0.53.0"
-versioning = "3.1.0"
+kotlin = "2.4.20"
+ktlint-gradle = "14.2.0"
+plugin-publish = "2.2.1"
+version-catalog-update = "1.1.1"
+version-check = "0.64.0"
+versioning = "4.0.1"
 
 [libraries]
 aws-codeartifact = { module = "software.amazon.awssdk:codeartifact", version.ref = "aws" }
